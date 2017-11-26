@@ -71,7 +71,7 @@ def select_all_blocks():
 
 
 def build_block(row):
-   return Block(row[0], row[1], row[2], row[3], row[4], row[5])
+    return Block(row[0], row[1], row[2], row[3], row[4], row[5])
 
 
 create_table_blocks()

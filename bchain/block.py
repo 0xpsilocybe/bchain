@@ -1,4 +1,5 @@
 import hashlib
+from bchain.configuration import NUM_ZEROS
 
 
 class Block:
@@ -40,6 +41,13 @@ class Block:
         header = str(self.index) + str(self.previous) + self.data + str(self.timestamp) + str(self.nonce)
         return header.encode("utf-8")
 
+    def is_valid(self):
+        """
+        Check if the block's hash begins with at least NUM_ZEROS
+        """
+        self._hash_me()
+        return str(self.hash_sequence[0:NUM_ZEROS]) == '0' * NUM_ZEROS
+
     def to_dict(self):
         return {
             'index': self.index,
@@ -55,8 +63,22 @@ class Block:
         sha.update(self.header_string())
         return sha.hexdigest()
 
+    def __eq__(self, other):
+        return (self.index == other.index and
+                self.timestamp == other.timestamp and
+                self.previous == other.previous and
+                self.hash_sequence == other.hash_sequence and
+                self.data == other.data and
+                self.nonce == other.nonce)
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
     def __str__(self):
-        return "Block<prev: %s, hash: %s>" % (self.previous, self.hash_sequence)
+        return "Block(%s, %s, %s, %s, %s, %s)" %\
+               tuple(self.to_dict().values())
 
     def __repr__(self):
-        return "Block<hash: %s> - %s" % (self.hash_sequence, self.data)
+        data_repr = self.data if self.data else "%NO DATA%"
+        return "Block<idx: %s hash: %s> - %s" %\
+               (self.index, self.hash_sequence, data_repr)
